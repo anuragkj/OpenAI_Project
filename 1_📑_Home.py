@@ -175,16 +175,15 @@ def app():
           markdown_to_voice(output)
           st.audio('notes_voice.mp3')
           display_sidebar(output)
-          export_as_pdf = st.button("Export Report")
-          if export_as_pdf:
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_font('Arial', 'B', 16)
-            pdf.cell(40, 10, stored_text)
-            
-            html = create_download_link(pdf.output(dest="S").encode("latin-1"), "test")
+          pdf = FPDF()
+          pdf.add_page()
+          pdf.set_font('Arial', 'B', 16)
+          pdf.cell(40, 10, stored_text)
+          
+          html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
-            st.markdown(html, unsafe_allow_html=True)
+          st.markdown(html, unsafe_allow_html=True)
+          st.caption("Report generated, cdownload to use with our chatbot")
       else:
           st.warning("Please enter some text to summarize.")
 
