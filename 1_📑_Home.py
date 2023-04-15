@@ -6,6 +6,8 @@ import streamlit as st
 from PIL import Image
 import re
 from gtts import gTTS
+from fpdf import FPDF
+import base64
 
 
 #------------Set up OpenAI API credentials------------
@@ -135,6 +137,10 @@ def display_sidebar(text:str)-> None:
   # Display the full text with headers
   st.markdown(text, unsafe_allow_html=True)
 
+def create_download_link(val, filename):
+  b64 = base64.b64encode(val)  # val looks like b'...'
+  return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="{filename}.pdf">Download file</a>'
+
 
 #------------Streamlit app------------
 def app():
@@ -153,7 +159,7 @@ def app():
     
   # Get user input
   video_URL = st.text_input("Paste the video URL here.")
-
+  stored_text = ""
   # Generate Notes
   if st.button("Generate Notes"):
       if video_URL:
@@ -161,6 +167,7 @@ def app():
             destination = "."
             video_to_audio(video_URL, destination)
             text = audio_to_text()
+            stored_text = text
             os.remove('Target_audio.mp3')
             output = generate_notes(text)
           st.video(video_URL)
@@ -168,6 +175,16 @@ def app():
           markdown_to_voice(output)
           st.audio('notes_voice.mp3')
           display_sidebar(output)
+          export_as_pdf = st.button("Export Report")
+          if export_as_pdf:
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font('Arial', 'B', 16)
+            pdf.cell(40, 10, stored_text)
+            
+            html = create_download_link(pdf.output(dest="S").encode("latin-1"), "test")
+
+            st.markdown(html, unsafe_allow_html=True)
       else:
           st.warning("Please enter some text to summarize.")
 
