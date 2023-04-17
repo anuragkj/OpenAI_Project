@@ -183,7 +183,7 @@ def app():
           html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
           st.markdown(html, unsafe_allow_html=True)
-          st.caption("Report generated, cdownload to use with our chatbot")
+          st.caption("Report generated, download to use with our chatbot")
       else:
           st.warning("Please enter some text to summarize.")
 
