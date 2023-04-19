@@ -8,6 +8,8 @@ import re
 from gtts import gTTS
 from fpdf import FPDF
 import base64
+import lxml
+from lxml import etree
 
 
 #------------Set up OpenAI API credentials------------
@@ -160,8 +162,8 @@ def app():
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial', 'B', 16)
-    pdf.multi_cell(190, 10, st.session_state['stored_text'])
-    
+    pdf.multi_cell(190, 10, st.session_state['output'])
+    print(st.session_state['output'].split('\n')[0][2:])
     html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
     st.markdown(html, unsafe_allow_html=True)
@@ -200,7 +202,8 @@ def app():
           pdf = FPDF()
           pdf.add_page()
           pdf.set_font('Arial', 'B', 16)
-          pdf.multi_cell(190, 10, st.session_state['stored_text'])
+          pdf.multi_cell(190, 10, st.session_state['output'])
+          print(st.session_state['output'].split('\n')[0][2:])
           
           html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
