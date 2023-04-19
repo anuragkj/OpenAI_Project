@@ -160,7 +160,7 @@ def app():
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial', 'B', 16)
-    pdf.cell(40, 10, st.session_state['stored_text'])
+    pdf.multi_cell(190, 10, st.session_state['stored_text'])
     
     html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
@@ -200,7 +200,7 @@ def app():
           pdf = FPDF()
           pdf.add_page()
           pdf.set_font('Arial', 'B', 16)
-          pdf.multi_cell(200, 10, "Hello")
+          pdf.multi_cell(190, 10, st.session_state['stored_text'])
           
           html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
