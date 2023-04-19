@@ -59,68 +59,70 @@ async def main():
         # print(st.session_state['history'])
         return result["answer"]
 
-    
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo")
-    chain = load_qa_chain(llm, chain_type="stuff")
+    if 'output' in st.session_state:
+        llm = ChatOpenAI(model_name="gpt-3.5-turbo")
+        chain = load_qa_chain(llm, chain_type="stuff")
 
-    if 'history' not in st.session_state:
-        st.session_state['history'] = []
+        if 'history' not in st.session_state:
+            st.session_state['history'] = []
 
 
-    #Creating the chatbot interface
-    with st.sidebar:   
-    # Add the logo image to the sidebar
-        image = Image.open("assets/images/feynmanai-no-bg.png")
-        st.image(image)
-        
-        # Add the header to the sidebar
-        st.header("Understanding complex topics made simple!")
-        st.write("_For students with special needs._")
+        #Creating the chatbot interface
+        with st.sidebar:   
+        # Add the logo image to the sidebar
+            image = Image.open("assets/images/feynmanai-no-bg.png")
+            st.image(image)
+            
+            # Add the header to the sidebar
+            st.header("Understanding complex topics made simple!")
+            st.write("_For students with special needs._")
 
-    if 'ready' not in st.session_state:
-        st.session_state['ready'] = False
+        if 'ready' not in st.session_state:
+            st.session_state['ready'] = False
 
-    # uploaded_file = st.file_uploader("Choose a file (Generate report from Homepage if help required over the video)", type="pdf")
+        # uploaded_file = st.file_uploader("Choose a file (Generate report from Homepage if help required over the video)", type="pdf")
 
-    # if st.button("Generate Chatbot"):
-         
-        # Add your code here that needs to be executed
-        # pdf = PyPDF2.PdfFileReader()
-        # qa = ConversationalRetrievalChain.from_llm(ChatOpenAI(model_name="gpt-3.5-turbo"), retriever=vectors.as_retriever(), return_source_documents=True)
+        # if st.button("Generate Chatbot"):
+            
+            # Add your code here that needs to be executed
+            # pdf = PyPDF2.PdfFileReader()
+            # qa = ConversationalRetrievalChain.from_llm(ChatOpenAI(model_name="gpt-3.5-turbo"), retriever=vectors.as_retriever(), return_source_documents=True)
 
-        # st.session_state['ready'] = True
+            # st.session_state['ready'] = True
 
-    # st.divider()
-    st.session_state['ready'] = True
-    if st.session_state['ready']:
+        # st.divider()
+        st.session_state['ready'] = True
+        if st.session_state['ready']:
 
-        if 'generated' not in st.session_state:
-            st.session_state['generated'] = ["Welcome! You can now ask any questions regarding the video"]
+            if 'generated' not in st.session_state:
+                st.session_state['generated'] = ["Welcome! You can now ask any questions regarding the video"]
 
-        if 'past' not in st.session_state:
-            st.session_state['past'] = ["Hey!"]
+            if 'past' not in st.session_state:
+                st.session_state['past'] = ["Hey!"]
 
-        # container for chat history
-        response_container = st.container()
+            # container for chat history
+            response_container = st.container()
 
-        # container for text box
-        container = st.container()
+            # container for text box
+            container = st.container()
 
-        with container:
-            with st.form(key='my_form', clear_on_submit=True):
-                user_input = st.text_input("Query:", placeholder="e.g: Summarize the video in a few sentences", key='input')
-                submit_button = st.form_submit_button(label='Send')
+            with container:
+                with st.form(key='my_form', clear_on_submit=True):
+                    user_input = st.text_input("Query:", placeholder="e.g: Summarize the video in a few sentences", key='input')
+                    submit_button = st.form_submit_button(label='Send')
 
-            if submit_button and user_input:
-                output = await conversational_chat(user_input)
-                st.session_state['past'].append(user_input)
-                st.session_state['generated'].append(output)
+                if submit_button and user_input:
+                    output = await conversational_chat(user_input)
+                    st.session_state['past'].append(user_input)
+                    st.session_state['generated'].append(output)
 
-        if st.session_state['generated']:
-            with response_container:
-                for i in range(len(st.session_state['generated'])):
-                    message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
-                    message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
+            if st.session_state['generated']:
+                with response_container:
+                    for i in range(len(st.session_state['generated'])):
+                        message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
+                        message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
+    else:
+        st.text = "Please add a URL in home page first"
 
 
 if __name__ == "__main__":

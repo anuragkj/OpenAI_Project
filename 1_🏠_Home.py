@@ -206,6 +206,7 @@ def app():
 
           st.markdown(html, unsafe_allow_html=True)
           st.caption("Report generated, download to use with our chatbot")
+          st.experimental_rerun()
       else:
           st.warning("Please enter some text to summarize.")
 
