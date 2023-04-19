@@ -147,7 +147,26 @@ def app():
   
   st.set_page_config(page_title="OPENAI TUTOR")  
   st.title("OPENAI TUTOR 📑")
- 
+  
+  if 'output' in st.session_state and 'video_url' in st.session_state and 'stored_text' in st.session_state:
+    # st.session_state['output'] = output
+    # st.session_state['video_url'] = video_URL
+    # st.session_state['stored_text'] = stored_text
+    st.video(st.session_state['video_url'])
+    st.write("Listen to the notes in voice")
+    markdown_to_voice(st.session_state['output'])
+    st.audio('notes_voice.mp3')
+    display_sidebar(st.session_state['output'])
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(40, 10, st.session_state['stored_text'])
+    
+    html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
+
+    st.markdown(html, unsafe_allow_html=True)
+    st.caption("Report generated, cdownload to use with our chatbot")
+  
   with st.sidebar:   
     # Add the logo image to the sidebar
     image = Image.open("assets/images/feynmanai-no-bg.png")
@@ -170,6 +189,9 @@ def app():
             stored_text = text
             os.remove('Target_audio.mp3')
             output = generate_notes(text)
+            st.session_state['output'] = output
+            st.session_state['video_url'] = video_URL
+            st.session_state['stored_text'] = stored_text
           st.video(video_URL)
           st.write("Listen to the notes in voice")
           markdown_to_voice(output)
@@ -183,7 +205,7 @@ def app():
           html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
           st.markdown(html, unsafe_allow_html=True)
-          st.caption("Report generated, cdownload to use with our chatbot")
+          st.caption("Report generated, download to use with our chatbot")
       else:
           st.warning("Please enter some text to summarize.")
 
