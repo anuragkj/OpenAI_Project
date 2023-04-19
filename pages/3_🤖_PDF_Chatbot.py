@@ -51,8 +51,8 @@ async def main():
     
 
     async def conversational_chat(query):
-        result = qa({"question": query, "chat_history": st.session_state['history']})
-        st.session_state['history'].append((query, result["answer"]))
+        result = qa({"question": query, "chat_history": st.session_state['history_pdf']})
+        st.session_state['history_pdf'].append((query, result["answer"]))
         # print("Log: ")
         # print(st.session_state['history'])
         return result["answer"]
@@ -61,8 +61,8 @@ async def main():
     llm = ChatOpenAI(model_name="gpt-3.5-turbo")
     chain = load_qa_chain(llm, chain_type="stuff")
 
-    if 'history' not in st.session_state:
-        st.session_state['history'] = []
+    if 'history_pdf' not in st.session_state:
+        st.session_state['history_pdf'] = []
 
 
     #Creating the chatbot interface
@@ -75,8 +75,8 @@ async def main():
         st.header("Understanding complex topics made simple!")
         st.write("_For students with special needs._")
 
-    if 'ready' not in st.session_state:
-        st.session_state['ready'] = False
+    if 'ready_pdf' not in st.session_state:
+        st.session_state['ready_pdf'] = False
 
     uploaded_file = st.file_uploader("Choose a file (Generate report from Homepage if help required over the video)", type="pdf")
 
@@ -90,17 +90,17 @@ async def main():
             vectors = await getDocEmbeds(io.BytesIO(file), uploaded_file.name)
             qa = ConversationalRetrievalChain.from_llm(ChatOpenAI(model_name="gpt-3.5-turbo"), retriever=vectors.as_retriever(), return_source_documents=True)
 
-        st.session_state['ready'] = True
+        st.session_state['ready_pdf'] = True
 
     # st.divider()
 
-    if st.session_state['ready']:
+    if st.session_state['ready_pdf']:
 
-        if 'generated' not in st.session_state:
-            st.session_state['generated'] = ["Welcome! You can now ask any questions regarding " + uploaded_file.name]
+        if 'generated_pdf' not in st.session_state:
+            st.session_state['generated_pdf'] = ["Welcome! You can now ask any questions regarding " + uploaded_file.name]
 
-        if 'past' not in st.session_state:
-            st.session_state['past'] = ["Hey!"]
+        if 'past_pdf' not in st.session_state:
+            st.session_state['past_pdf'] = ["Hey!"]
 
         # container for chat history
         response_container = st.container()
@@ -115,14 +115,14 @@ async def main():
 
             if submit_button and user_input:
                 output = await conversational_chat(user_input)
-                st.session_state['past'].append(user_input)
-                st.session_state['generated'].append(output)
+                st.session_state['past_pdf'].append(user_input)
+                st.session_state['generated_pdf'].append(output)
 
-        if st.session_state['generated']:
+        if st.session_state['generated_pdf']:
             with response_container:
-                for i in range(len(st.session_state['generated'])):
-                    message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
-                    message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
+                for i in range(len(st.session_state['generated_pdf'])):
+                    message(st.session_state["past_pdf"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
+                    message(st.session_state["generated_pdf"][i], key=str(i), avatar_style="fun-emoji")
 
 
 if __name__ == "__main__":

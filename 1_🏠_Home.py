@@ -7,16 +7,33 @@ from PIL import Image
 import re
 from gtts import gTTS
 from fpdf import FPDF
+import requests
 import base64
-import lxml
-from lxml import etree
+import fpdf
 
+URL = "https://horrible-mole-67.loca.lt"
+headers = {'Bypass-Tunnel-Reminder': "go",
+           'mode': 'no-cors'}
 
 #------------Set up OpenAI API credentials------------
 # with open("/secrets/secrets.toml", "r") as f:
 #     config = toml.load(f)
 
 openai.api_key = st.secrets["OPENAI_KEY"]
+
+#------------Dalle------------
+def check_if_valid_backend(url):
+    try:
+        resp = requests.get(url, timeout=5, headers=headers)
+        return resp.status_code == 200
+    except requests.exceptions.Timeout:
+        return False
+    
+def call_dalle(url, text, num_images=1):
+    data = {"text": text, "num_images": num_images}
+    resp = requests.post(url + "/dalle", headers=headers, json=data)
+    if resp.status_code == 200:
+        return resp
 
 #------------Model------------
 def video_to_audio(video_URL:str, destination:str)-> None:
@@ -137,6 +154,7 @@ def display_sidebar(text:str)-> None:
       st.sidebar.markdown(f'- [{text_without_hashes}](#{text_without_hashes.lower().replace(" ", "-")})')
 
   # Display the full text with headers
+  st.image(st.session_state['img'])
   st.markdown(text, unsafe_allow_html=True)
 
 def create_download_link(val, filename):
@@ -151,23 +169,20 @@ def app():
   st.title("OPENAI TUTOR 📑")
   
   if 'output' in st.session_state and 'video_url' in st.session_state and 'stored_text' in st.session_state:
-    # st.session_state['output'] = output
-    # st.session_state['video_url'] = video_URL
-    # st.session_state['stored_text'] = stored_text
     st.video(st.session_state['video_url'])
     st.write("Listen to the notes in voice")
-    # markdown_to_voice(st.session_state['output'])
     st.audio('notes_voice.mp3')
     display_sidebar(st.session_state['output'])
+    
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial', 'B', 16)
-    pdf.multi_cell(190, 10, st.session_state['output'])
-    print(st.session_state['output'].split('\n')[0][2:])
+    pdf.multi_cell(190, 10, st.session_state['output'].replace('#',''))
     html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
     st.markdown(html, unsafe_allow_html=True)
-    st.caption("Report generated, cdownload to use with our chatbot")
+    st.caption("Report generated, download to use with our chatbot")
+          
   
   with st.sidebar:   
     # Add the logo image to the sidebar
@@ -191,20 +206,29 @@ def app():
             stored_text = text
             os.remove('Target_audio.mp3')
             output = generate_notes(text)
+            
             st.session_state['output'] = output
             st.session_state['video_url'] = video_URL
             st.session_state['stored_text'] = stored_text
+            PROMPT = "A simple image of "+st.session_state['output'].split('\n')[0][2:]
+
+            response = openai.Image.create(
+                prompt=PROMPT,
+                n=1,
+                size="256x256",
+            )
+            
+            st.session_state['img'] = response["data"][0]["url"]
           st.video(video_URL)
           st.write("Listen to the notes in voice")
           markdown_to_voice(output)
           st.audio('notes_voice.mp3')
           display_sidebar(output)
+  
           pdf = FPDF()
           pdf.add_page()
           pdf.set_font('Arial', 'B', 16)
-          pdf.multi_cell(190, 10, st.session_state['output'])
-          print(st.session_state['output'].split('\n')[0][2:])
-          
+          pdf.multi_cell(190, 10, st.session_state['output'].replace('#',''))
           html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
           st.markdown(html, unsafe_allow_html=True)
