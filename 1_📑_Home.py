@@ -154,7 +154,7 @@ def app():
     # st.session_state['stored_text'] = stored_text
     st.video(st.session_state['video_url'])
     st.write("Listen to the notes in voice")
-    markdown_to_voice(st.session_state['output'])
+    # markdown_to_voice(st.session_state['output'])
     st.audio('notes_voice.mp3')
     display_sidebar(st.session_state['output'])
     pdf = FPDF()
