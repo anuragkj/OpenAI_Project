@@ -78,7 +78,7 @@ async def main():
     if 'ready_pdf' not in st.session_state:
         st.session_state['ready_pdf'] = False
 
-    uploaded_file = st.file_uploader("Choose a file (Generate report from Homepage if help required over the video)", type="pdf")
+    uploaded_file = st.file_uploader("Choose a file ", type="pdf")
 
     if uploaded_file is not None:
 
