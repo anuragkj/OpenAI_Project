@@ -191,7 +191,7 @@ def app():
     
     # Add the header to the sidebar
     st.header("Understanding complex topics made simple!")
-    st.write("_For students with special needs._")
+    st.write("_Your very own personal tutor._")
     
   # Get user input
   video_URL = st.text_input("Paste the video URL here.")

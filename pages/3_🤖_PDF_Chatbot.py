@@ -73,7 +73,7 @@ async def main():
         
         # Add the header to the sidebar
         st.header("Understanding complex topics made simple!")
-        st.write("_For students with special needs._")
+        st.write("_Your very own personal tutor._")
 
     if 'ready_pdf' not in st.session_state:
         st.session_state['ready_pdf'] = False
