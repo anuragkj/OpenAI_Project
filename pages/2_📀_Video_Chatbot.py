@@ -122,7 +122,15 @@ async def main():
                         message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
                         message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
     else:
-        st.text = "Please add a URL in home page first"
+        with st.sidebar:   
+        # Add the logo image to the sidebar
+            image = Image.open("assets/images/feynmanai-no-bg.png")
+            st.image(image)
+            
+            # Add the header to the sidebar
+            st.header("Understanding complex topics made simple!")
+            st.write("_For students with special needs._")
+        st.write("❗Please add a URL in home page first❗")
 
 
 if __name__ == "__main__":
