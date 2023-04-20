@@ -52,7 +52,7 @@ async def main():
 
     async def conversational_chat(query):
         vectors = await getDocEmbeds('random')
-        qa = ConversationalRetrievalChain.from_llm(ChatOpenAI(model_name="gpt-3.5-turbo"), retriever=vectors.as_retriever(), return_source_documents=True)
+        qa = ConversationalRetrievalChain.from_llm(ChatOpenAI(model_name="gpt-4"), retriever=vectors.as_retriever(), return_source_documents=True)
         result = qa({"question": query, "chat_history": st.session_state['history']})
         st.session_state['history'].append((query, result["answer"]))
         # print("Log: ")
@@ -60,7 +60,7 @@ async def main():
         return result["answer"]
 
     if 'output' in st.session_state:
-        llm = ChatOpenAI(model_name="gpt-3.5-turbo")
+        llm = ChatOpenAI(model_name="gpt-4")
         chain = load_qa_chain(llm, chain_type="stuff")
 
         if 'history' not in st.session_state:
