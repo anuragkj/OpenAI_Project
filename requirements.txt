@@ -4,6 +4,7 @@ pytube~=12.1.3
 gTTS==2.3.1
 fpdf==1.7.2
 stream_chat
+streamlit-chat
 langchain~=0.0.139
 python-dotenv~=0.20.0
 Pillow~=9.1.0
