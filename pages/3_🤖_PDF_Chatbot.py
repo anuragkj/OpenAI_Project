@@ -1,19 +1,19 @@
+import asyncio
+import io
+import os
+import pickle
+
+import streamlit as st
+from PIL import Image
 from PyPDF2 import PdfReader
+from dotenv import load_dotenv
+from langchain.chains import ConversationalRetrievalChain
+from langchain.chains.question_answering import load_qa_chain
+from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
-from langchain.chains.question_answering import load_qa_chain
-from langchain.chat_models import ChatOpenAI
-from langchain.chains import ConversationalRetrievalChain
-import pickle
-from pathlib import Path
-from dotenv import load_dotenv
-import os
-import streamlit as st
 from streamlit_chat import message
-import io
-import asyncio
-from PIL import Image
 
 load_dotenv()
 api_key = st.secrets["OPENAI_KEY"]  

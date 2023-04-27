@@ -1,15 +1,14 @@
-import openai
+import base64
 import os
-import toml
-from pytube import YouTube
+import re
+
+import openai
+import requests
 import streamlit as st
 from PIL import Image
-import re
-from gtts import gTTS
 from fpdf import FPDF
-import requests
-import base64
-import fpdf
+from gtts import gTTS
+from pytube import YouTube
 
 URL = "https://horrible-mole-67.loca.lt"
 headers = {'Bypass-Tunnel-Reminder': "go",
@@ -28,7 +27,7 @@ def check_if_valid_backend(url):
         return resp.status_code == 200
     except requests.exceptions.Timeout:
         return False
-    
+
 def call_dalle(url, text, num_images=1):
     data = {"text": text, "num_images": num_images}
     resp = requests.post(url + "/dalle", headers=headers, json=data)
@@ -45,12 +44,12 @@ def video_to_audio(video_URL:str, destination:str)-> None:
             destination(str): path to temporarily store the extracted audio file
     Returns:
             None
-  '''   
+  '''
   video = YouTube(video_URL)
-  
+
   # Convert video to Audio
   audio = video.streams.filter(only_audio=True).first()
-  output = audio.download(output_path = destination)  
+  output = audio.download(output_path = destination)
   _, ext = os.path.splitext(output)
   new_file = "Target_audio" + '.mp3'
   # Change the name of the file
@@ -61,31 +60,31 @@ def audio_to_text()-> None:
   Converts Target_audio.mp3 into text using whisper-1 model
     Args:
             None
-            
+
     Returns:
             None
-  '''  
+  '''
   audio_file= open("Target_audio.mp3", "rb")
   transcript = openai.Audio.translate("whisper-1", audio_file)
   return transcript['text']
 
-def markdown_to_voice(text:str)-> None: 
+def markdown_to_voice(text:str)-> None:
   '''
   Converts markdown into plain text format and saves it in voice_file.mp3
   Args:
           text(str): text in the format of markdown
-          
+
   Returns:
           None
   '''
   output_file = "notes_voice.mp3"
-  
+
   #Convert markdown to plain text
   cleaned_text = text.replace('#', ' ').replace('-', ' ').replace('.', ' ')
 
   speech = gTTS(text = cleaned_text)
   speech.save(output_file)
-  
+
 
 
 def generate_notes(text:str)-> str:
@@ -93,7 +92,7 @@ def generate_notes(text:str)-> str:
     Generates notes from input text
     Args:
             text(str): Generated text from audio file
-            
+
     Returns:
             reply(str): Notes formatted in Markdown format
   '''
@@ -117,20 +116,20 @@ def generate_notes(text:str)-> str:
             """
 
   messages = [
-              {"role": "system", "content": prompt}, 
+              {"role": "system", "content": prompt},
               {"role": "user", "content": text}
               ]
 
   chat = openai.ChatCompletion.create(
-      model="gpt-4", 
-      messages=messages, 
+      model="gpt-4",
+      messages=messages,
       temperature=1.2,
       top_p=0,
       n=1,
       stream=False,
       presence_penalty=0,
       frequency_penalty=0)
-  
+
   reply = chat.choices[0].message.content
   return(reply)
 
@@ -164,16 +163,16 @@ def create_download_link(val, filename):
 
 #------------Streamlit app------------
 def app():
-  
-  st.set_page_config(page_title="MentorEX")  
+
+  st.set_page_config(page_title="MentorEX")
   st.title("MENTOREX 📑")
-  
+
   if 'output' in st.session_state and 'video_url' in st.session_state and 'stored_text' in st.session_state:
     st.video(st.session_state['video_url'])
     st.write("Listen to the notes in voice")
     st.audio('notes_voice.mp3')
     display_sidebar(st.session_state['output'])
-    
+
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial', 'B', 16)
@@ -182,17 +181,17 @@ def app():
 
     st.markdown(html, unsafe_allow_html=True)
     st.caption("Report generated, download to use with our chatbot")
-          
-  
-  with st.sidebar:   
+
+
+  with st.sidebar:
     # Add the logo image to the sidebar
     image = Image.open("assets/images/feynmanai-no-bg.png")
     st.image(image)
-    
+
     # Add the header to the sidebar
     st.header("Understanding complex topics made simple!")
     st.write("_Your very own personal tutor._")
-    
+
   # Get user input
   video_URL = st.text_input("Paste the video URL here.")
   stored_text = ""
@@ -206,7 +205,7 @@ def app():
             stored_text = text
             os.remove('Target_audio.mp3')
             output = generate_notes(text)
-            
+
             st.session_state['output'] = output
             st.session_state['video_url'] = video_URL
             st.session_state['stored_text'] = stored_text
@@ -217,14 +216,14 @@ def app():
                 n=1,
                 size="256x256",
             )
-            
+
             st.session_state['img'] = response["data"][0]["url"]
           st.video(video_URL)
           st.write("Listen to the notes in voice")
           markdown_to_voice(output)
           st.audio('notes_voice.mp3')
           display_sidebar(output)
-  
+
           pdf = FPDF()
           pdf.add_page()
           pdf.set_font('Arial', 'B', 16)
