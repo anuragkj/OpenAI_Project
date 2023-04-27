@@ -11,3 +11,4 @@ python-dotenv~=1.0.0
 tiktoken~=0.3.3
 faiss-cpu~=1.7.3
 streamlit-chat~=0.0.2.2
+pexpect~=4.8.0
