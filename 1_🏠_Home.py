@@ -165,8 +165,8 @@ def create_download_link(val, filename):
 #------------Streamlit app------------
 def app():
   
-  st.set_page_config(page_title="OPENAI TUTOR")  
-  st.title("OPENAI TUTOR 📑")
+  st.set_page_config(page_title="MentorEX")  
+  st.title("MENTOREX 📑")
   
   if 'output' in st.session_state and 'video_url' in st.session_state and 'stored_text' in st.session_state:
     st.video(st.session_state['video_url'])
