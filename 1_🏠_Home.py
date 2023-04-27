@@ -48,7 +48,7 @@ def video_to_audio(video_URL: str, destination: str) -> None:
     Returns:
             None
   """
-    video = YouTube(video_URL, use_oauth=True, allow_oauth_cache=True)
+    video = YouTube(video_URL)
 
     # Convert video to Audio
 
