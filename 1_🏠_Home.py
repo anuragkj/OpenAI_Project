@@ -253,7 +253,7 @@ def app():
             html = create_download_link(pdf.output(), "Report")
             # os.remove("image.png")
             st.markdown(html, unsafe_allow_html=True)
-            st.caption("Report generated, download to use with our chatbot")
+            st.caption("Report generated, you can download using the bitton")
             st.experimental_rerun()
         else:
             st.warning("Please enter some text to summarize.")
