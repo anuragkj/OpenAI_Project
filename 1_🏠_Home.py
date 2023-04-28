@@ -9,6 +9,7 @@ from PIL import Image
 from fpdf import FPDF
 from gtts import gTTS
 from pytube import YouTube
+from io import BytesIO
 
 URL = "https://horrible-mole-67.loca.lt"
 headers = {'Bypass-Tunnel-Reminder': "go",
@@ -159,7 +160,7 @@ def display_sidebar(text: str) -> None:
         st.sidebar.markdown(f'- [{text_without_hashes}](#{text_without_hashes.lower().replace(" ", "-")})')
 
     # Display the full text with headers
-    st.image(st.session_state['img'])
+    # st.image(st.session_state['img'])
     st.markdown(text, unsafe_allow_html=True)
 
 
@@ -214,15 +215,7 @@ def app():
                 st.session_state['output'] = output
                 st.session_state['video_url'] = video_URL
                 st.session_state['stored_text'] = stored_text
-                PROMPT = "A simple image of " + st.session_state['output'].split('\n')[0][2:]
 
-                response = openai.Image.create(
-                    prompt=PROMPT,
-                    n=1,
-                    size="256x256",
-                )
-
-                st.session_state['img'] = response["data"][0]["url"]
             st.video(video_URL)
             st.write("Listen to the notes in voice")
             markdown_to_voice(output)
@@ -233,8 +226,20 @@ def app():
             pdf.add_page()
             pdf.set_font('Arial', 'B', 16)
             pdf.multi_cell(190, 10, st.session_state['output'].replace('#', ''))
-            html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
 
+            PROMPT = "A simple image of " + st.session_state['output'].split('\n')[0][2:]
+            response = openai.Image.create(
+                prompt=PROMPT,
+                n=1,
+                size="256x256",
+            )
+            res = requests.get(response["data"][0]["url"])
+            img = Image.open(BytesIO(res.content))
+            img.save("image.png")
+            pdf.image("image.png", x=None, y=None, w=256, h=256, type='PNG')
+
+            html = create_download_link(pdf.output(dest="S").encode("latin-1"), "Report")
+            os.remove("image.png")
             st.markdown(html, unsafe_allow_html=True)
             st.caption("Report generated, download to use with our chatbot")
             st.experimental_rerun()
