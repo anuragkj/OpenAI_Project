@@ -211,7 +211,7 @@ def app():
         st.write("_Your very own personal tutor._")
 
     # Get user input
-    video_URL = st.text_input("Paste the video URL here.")
+    video_URL = st.text_input("Paste the Youtube URL here.")
     stored_text = ""
     # Generate Notes
     if st.button("Generate Notes"):
@@ -240,15 +240,15 @@ def app():
             pdf.multi_cell(190, 10, st.session_state['output'].replace('#', ''))
 
             PROMPT = "A simple image of " + st.session_state['output'].split('\n')[0][2:]
-            response = openai.Image.create(
-                prompt=PROMPT,
-                n=1,
-                size="256x256",
-            )
+            # response = openai.Image.create(
+            #     prompt=PROMPT,
+            #     n=1,
+            #     size="256x256",
+            # )
             # res = requests.get(response["data"][0]["url"])
             # img = Image.open(BytesIO(res.content))
             # img.save("image.png")
-            pdf.image(response["data"][0]["url"], x=20)
+            # pdf.image(response["data"][0]["url"], x=20)
 
             html = create_download_link(pdf.output(), "Report")
             # os.remove("image.png")
