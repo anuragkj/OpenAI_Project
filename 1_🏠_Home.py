@@ -184,16 +184,16 @@ def app():
         pdf.set_font('Arial', 'B', 16)
         pdf.multi_cell(190, 10, st.session_state['output'].replace('#', ''))
 
-        PROMPT = "A simple image of " + st.session_state['output'].split('\n')[0][2:]
-        response = openai.Image.create(
-            prompt=PROMPT,
-            n=1,
-            size="256x256",
-        )
+        # PROMPT = "A simple image of " + st.session_state['output'].split('\n')[0][2:]
+        # response = openai.Image.create(
+        #     prompt=PROMPT,
+        #     n=1,
+        #     size="256x256",
+        # )
         # res = requests.get(response["data"][0]["url"])
         # img = Image.open(BytesIO(res.content))
         # img.save("image.png")
-        pdf.image(response["data"][0]["url"], x=20)
+        # pdf.image(response["data"][0]["url"], x=20)
 
         html = create_download_link(pdf.output(), "Report")
         # os.remove("image.png")
@@ -239,7 +239,7 @@ def app():
             pdf.set_font('Arial', 'B', 16)
             pdf.multi_cell(190, 10, st.session_state['output'].replace('#', ''))
 
-            PROMPT = "A simple image of " + st.session_state['output'].split('\n')[0][2:]
+            # PROMPT = "A simple image of " + st.session_state['output'].split('\n')[0][2:]
             # response = openai.Image.create(
             #     prompt=PROMPT,
             #     n=1,
@@ -253,7 +253,7 @@ def app():
             html = create_download_link(pdf.output(), "Report")
             # os.remove("image.png")
             st.markdown(html, unsafe_allow_html=True)
-            st.caption("Report generated, you can download using the bitton")
+            st.caption("Report generated, you can download using the button")
             st.experimental_rerun()
         else:
             st.warning("Please enter some text to summarize.")
