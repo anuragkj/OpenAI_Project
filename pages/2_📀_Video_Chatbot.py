@@ -15,6 +15,7 @@ from streamlit_chat import message
 
 load_dotenv()
 api_key = st.secrets["OPENAI_KEY"]
+os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_KEY"]
 
 
 # vectors = getDocEmbeds("gpt4.pdf")
